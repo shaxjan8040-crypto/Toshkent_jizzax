@@ -1,541 +1,70 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toshkent - Jizzax Taksi</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --primary: #f59e0b;
-            --primary-dark: #d97706;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --success: #10b981;
-        }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            padding-bottom: 30px;
-        }
-
-        /* Header & Banner */
-        .header {
-            position: relative;
-            width: 100%;
-            height: 180px;
-            overflow: hidden;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-
-        .header img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(0.75);
-        }
-
-        .header-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(transparent, rgba(15, 23, 42, 0.95));
-        }
-
-        .header-overlay h1 {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .header-overlay p {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        /* Container */
-        .container {
-            padding: 15px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        /* Role Switcher Tabs */
-        .tabs {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            background: var(--card-bg);
-            padding: 5px;
-            border-radius: 14px;
-            margin-bottom: 18px;
-            border: 1px solid var(--border);
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 10px 5px;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .tab-btn.active {
-            background: var(--primary);
-            color: #000;
-            font-weight: 700;
-        }
-
-        /* Sections */
-        .section {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Form Card */
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 16px;
-            border: 1px solid var(--border);
-            margin-bottom: 15px;
-        }
-
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        /* Route Selector */
-        .route-box {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--bg-color);
-            padding: 10px 12px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .city {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .swap-btn {
-            background: var(--primary);
-            color: #000;
-            border: none;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            background: var(--bg-color);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary);
-        }
-
-        /* Quick Chips */
-        .chips {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .chip {
-            background: var(--bg-color);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            cursor: pointer;
-            flex: 1;
-            text-align: center;
-            min-width: 65px;
-        }
-
-        .chip.selected {
-            background: rgba(245, 158, 11, 0.2);
-            border-color: var(--primary);
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        /* Main Submit Button */
-        .submit-btn {
-            width: 100%;
-            background: var(--primary);
-            color: #000;
-            border: none;
-            padding: 14px;
-            font-size: 15px;
-            font-weight: 800;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-top: 5px;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-        }
-
-        .submit-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Live Feed Cards */
-        .feed-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 12px;
-        }
-
-        .feed-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .badge {
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: 700;
-        }
-
-        .badge-driver {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--success);
-        }
-
-        .badge-client {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--primary);
-        }
-
-        .feed-route {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .feed-info {
-            font-size: 13px;
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
-
-        .call-btn {
-            display: block;
-            width: 100%;
-            text-align: center;
-            background: var(--success);
-            color: #fff;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Banner Rasm Qismi -->
-    <div class="header">
-        <!-- AGAR RASMNI GITHUBGA YUKLASANGIZ, SRC ICHIGA FAYL NOMINI YOZING (masalan: rasm.jpg) -->
-        <img src="https://ibb.co/DH67W478" onerror="this.src='https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=800&q=80'" alt="Toshkent Jizzax Taksi">
-        <div class="header-overlay">
-            <h1>🚖 TOSHKENT ⇄ JIZZAX</h1>
-            <p>Tezkor, qulay va ishonchli qatnov xizmati</p>
-        </div>
-    </div>
-
-    <div class="container">
-        <!-- Bo'limlarni almashtirish -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('client')">🙋‍♂️ Yo‘lovchi</button>
-            <button class="tab-btn" onclick="switchTab('driver')">🚖 Haydovchi</button>
-            <button class="tab-btn" onclick="switchTab('feed')">📋 E'lonlar</button>
-        </div>
-
-        <!-- 1. YO'LOVCHI BO'LIMI -->
-        <div id="client" class="section active">
-            <div class="card">
-                <div class="form-group">
-                    <label>Yo‘nalishni tanlang (o‘zgartirish uchun tugmani bosing):</label>
-                    <div class="route-box">
-                        <span class="city" id="c-from">Toshkent</span>
-                        <button class="swap-btn" onclick="swapRoute('c')">⇄</button>
-                        <span class="city" id="c-to">Jizzax</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Nima yuborasiz / Necha kishi?</label>
-                    <div class="chips" id="passenger-chips">
-                        <div class="chip selected" onclick="selectChip(this, '1 kishi')">1 kishi</div>
-                        <div class="chip" onclick="selectChip(this, '2 kishi')">2 kishi</div>
-                        <div class="chip" onclick="selectChip(this, '3 kishi')">3 kishi</div>
-                        <div class="chip" onclick="selectChip(this, '4 kishi (Salon)')">Salon</div>
-                        <div class="chip" onclick="selectChip(this, '📦 Pochta / Yuk')">📦 Pochta</div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Qaysi mashina ma'qul?</label>
-                    <select id="c-car">
-                        <option value="Farqi yo'q (Tezroq bo'lsa bas)">Farqi yo'q (Tezroq bo'lsa bas)</option>
-                        <option value="Chevrolet Cobalt">Chevrolet Cobalt</option>
-                        <option value="Chevrolet Gentra / Lacetti">Chevrolet Gentra / Lacetti</option>
-                        <option value="Chevrolet Tracker / Malibu">Chevrolet Tracker / Malibu (Komfort)</option>
-                        <option value="KIA / Hyundai / BYD">KIA / Hyundai / BYD</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Qayerdan olib ketish va qayerga borish?</label>
-                    <input type="text" id="c-address" placeholder="Masalan: Olmazor metro yonidan Jizzax markazga">
-                </div>
-
-                <div class="form-group">
-                    <label>Qachon yo‘lga chiqasiz?</label>
-                    <input type="text" id="c-time" placeholder="Masalan: Hozir yoki soat 15:00 da">
-                </div>
-
-                <div class="form-group">
-                    <label>Telefon raqamingiz:</label>
-                    <input type="tel" id="c-phone" placeholder="+998 90 123 45 67">
-                </div>
-
-                <button class="submit-btn" onclick="submitClient()">🚖 Taksi chaqirish</button>
-            </div>
-        </div>
-
-        <!-- 2. HAYDOVCHI BO'LIMI -->
-        <div id="driver" class="section">
-            <div class="card">
-                <div class="form-group">
-                    <label>Qaysi yo‘nalishda yurasiz?</label>
-                    <div class="route-box">
-                        <span class="city" id="d-from">Jizzax</span>
-                        <button class="swap-btn" onclick="swapRoute('d')">⇄</button>
-                        <span class="city" id="d-to">Toshkent</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Avtomobil rusumi va rangi:</label>
-                    <input type="text" id="d-car" placeholder="Masalan: Oq Cobalt">
-                </div>
-
-                <div class="form-group">
-                    <label>Bo‘sh o‘rinlar soni:</label>
-                    <div class="chips" id="seats-chips">
-                        <div class="chip" onclick="selectSeat(this, '1 ta joy')">1 ta</div>
-                        <div class="chip" onclick="selectSeat(this, '2 ta joy')">2 ta</div>
-                        <div class="chip selected" onclick="selectSeat(this, '3 ta joy')">3 ta</div>
-                        <div class="chip" onclick="selectSeat(this, '4 ta joy (Bo\'sh)')">4 ta</div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>1 kishi uchun yo‘l haqi (so‘m):</label>
-                    <input type="text" id="d-price" placeholder="Masalan: 100 000 so'm">
-                </div>
-
-                <div class="form-group">
-                    <label>Jo‘nash vaqti va manzili:</label>
-                    <input type="text" id="d-time" placeholder="Masalan: 14:30 da Avtovokzaldan">
-                </div>
-
-                <div class="form-group">
-                    <label>Haydovchi telefon raqami:</label>
-                    <input type="tel" id="d-phone" placeholder="+998 91 987 65 43">
-                </div>
-
-                <button class="submit-btn" onclick="submitDriver()">📢 E'lonni joylash</button>
-            </div>
-        </div>
-
-        <!-- 3. JONLI E'LONLAR LENTASI -->
-        <div id="feed" class="section">
-            <div class="feed-card">
-                <div class="feed-header">
-                    <span class="badge badge-driver">🚖 HAYDOVCHI • Hozir</span>
-                    <span style="font-size: 13px; font-weight: bold; color: #f59e0b;">100 000 so'm</span>
-                </div>
-                <div class="feed-route">Toshkent ➔ Jizzax</div>
-                <div class="feed-info">
-                    🚗 <b>Mashina:</b> Oq Gentra (Konditsioner bor)<br>
-                    💺 <b>Bo‘sh joy:</b> 2 ta odam olaman, pochta ham olaman<br>
-                    📍 <b>Jo‘nash:</b> Sobir Rahimov (Olmazor) metrosidan
-                </div>
-                <a href="tel:+998901234567" class="call-btn">📞 Qo‘ng‘iroq qilish</a>
-            </div>
-
-            <div class="feed-card">
-                <div class="feed-header">
-                    <span class="badge badge-client">🙋‍♂️ YO‘LOVCHI • 5 daq oldin</span>
-                    <span style="font-size: 13px; font-weight: bold; color: #f59e0b;">2 kishi</span>
-                </div>
-                <div class="feed-route">Jizzax ➔ Toshkent</div>
-                <div class="feed-info">
-                    📍 <b>Manzil:</b> Jizzax Zelioniy bozordan Chilonzorga<br>
-                    🕒 <b>Vaqt:</b> Bugun soat 16:00 atrofida<br>
-                    💬 <b>Izoh:</b> Yukimiz ozroq, toza mashina kerak
-                </div>
-                <a href="tel:+998912345678" class="call-btn">📞 Bog‘lanish</a>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        let selectedPassenger = "1 kishi";
-        let selectedSeat = "3 ta joy";
-
-        // Tablarni almashtirish
-        function switchTab(tabId) {
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        // Shaharlarni almashtirish (Toshkent <-> Jizzax)
-        function swapRoute(prefix) {
-            let fromEl = document.getElementById(prefix + '-from');
-            let toEl = document.getElementById(prefix + '-to');
-            let temp = fromEl.innerText;
-            fromEl.innerText = toEl.innerText;
-            toEl.innerText = temp;
-        }
-
-        // Yo'lovchi sonini tanlash
-        function selectChip(el, val) {
-            document.querySelectorAll('#passenger-chips .chip').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedPassenger = val;
-        }
-
-        // Haydovchi bo'sh joyini tanlash
-        function selectSeat(el, val) {
-            document.querySelectorAll('#seats-chips .chip').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedSeat = val;
-        }
-
-        // Yo'lovchi buyurtmasini botga yuborish
-        function submitClient() {
-            let from = document.getElementById('c-from').innerText;
-            let to = document.getElementById('c-to').innerText;
-            let car = document.getElementById('c-car').value;
-            let address = document.getElementById('c-address').value;
-            let time = document.getElementById('c-time').value;
-            let phone = document.getElementById('c-phone').value;
-
-            if (!phone || !address) {
-                tg.showAlert("Iltimos, manzil va telefon raqamingizni kiriting!");
-                return;
-            }
-
-            let message = `🙋‍♂️ YANGI YO'LOVCHI BUYURTMASI!\n\n` +
-                          `📍 Yo'nalish: ${from} ➔ ${to}\n` +
-                          `👥 Soni: ${selectedPassenger}\n` +
-                          `🚗 Mashina: ${car}\n` +
-                          `🏠 Manzil: ${address}\n` +
-                          `🕒 Vaqt: ${time || 'Hozir'}\n` +
-                          `📞 Telefon: ${phone}`;
-
-            tg.sendData(message);
-        }
-
-        // Haydovchi e'lonini botga yuborish
-        function submitDriver() {
-            let from = document.getElementById('d-from').innerText;
-            let to = document.getElementById('d-to').innerText;
-            let car = document.getElementById('d-car').value;
-            let price = document.getElementById('d-price').value;
-            let time = document.getElementById('d-time').value;
-            let phone = document.getElementById('d-phone').value;
-
-            if (!phone || !car) {
-                tg.showAlert("Iltimos, mashina rusumi va telefon raqamingizni kiriting!");
-                return;
-            }
-
-            let message = `🚖 YANGI HAYDOVCHI E'LONI!\n\n` +
-                          `📍 Yo'nalish: ${from} ➔ ${to}\n` +
-                          `🚗 Mashina: ${car}\n` +
-                          `💺 Bo'sh joy: ${selectedSeat}\n` +
-                          `💵 Narx: ${price || 'Kelishilgan holda'}\n` +
-                          `🕒 Jo'nash: ${time || 'To\'lishi bilan'}\n` +
-                          `📞 Telefon: ${phone}`;
-
-            tg.sendData(message);
-        }
-    </script>
-</body>
-</html>
+/* VIDEO KIRISH EKRANI */
+#introScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #050505;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+#introScreen h1 {
+    color: #f59e0b;
+    font-size: 25px;
+    margin-bottom: 12px;
+    font-weight: 900;
+}
+
+#introScreen p {
+    color: #cbd5e1;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+#startButton {
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    color: #111;
+    border: none;
+    border-radius: 14px;
+    padding: 17px 55px;
+    font-size: 21px;
+    font-weight: 900;
+    box-shadow: 0 0 25px rgba(245,158,11,.35);
+    cursor: pointer;
+}
+
+#introVideo {
+    width: 100%;
+    max-width: 500px;
+    max-height: 65vh;
+    object-fit: contain;
+    display: none;
+    border-radius: 15px;
+    background: #000;
+}
+
+#videoError {
+    display: none;
+    color: #fbbf24;
+    margin-top: 15px;
+}
+
+#continueButton {
+    display: none;
+    background: #f59e0b;
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 25px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+#appContent {
+    display: none;
+}
